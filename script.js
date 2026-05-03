@@ -75,7 +75,7 @@ function bayesianScore(sources) {
 async function fetchOMDB(imdbId) {
     if (!imdbId) return null;
     try {
-        const res = await fetch(`https://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_API_KEY}`);
+        const res = await fetch(`http://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_API_KEY}`);
         const data = await res.json();
         if (data.Response === "False") return null;
 
@@ -134,11 +134,11 @@ async function buscarPeliculas() {
             const extData = await extRes.json();
             imdbId = extData.imdb_id || null;
         } catch { /* si falla, seguimos sin imdb_id */ }
-        console.log("imdb_id obtenido:", imdbId);
+        // console.log("imdb_id obtenido:", imdbId);
 
         // 2. Obtener nota de OMDB usando el imdb_id
         const omdb = await fetchOMDB(imdbId);
-        console.log("respuesta OMDB:", omdb);
+        // console.log("respuesta OMDB:", omdb);
 
         // 3. Calcular nota Bayesiana combinada
         //    → Para añadir Letterboxd u otra fuente: añade { R, n, ...params.nueva } aquí
@@ -181,10 +181,46 @@ boton.addEventListener("click", async function () {
         .order("popularity", { ascending: false });
 
     if (data && data.length > 0) {
-        console.log("Cargando desde Supabase 🗄️");
-        data.forEach(renderCard);
+        // Separar las que ya tienen OMDB de las que no
+        const completas = data.filter(p => p.omdb_rating !== null);
+        const sinEnriquecer = data.filter(p => p.omdb_rating === null);
+
+        // Las completas se renderizan directamente desde caché
+        if (completas.length > 0) {
+            // console.log("Cargando completas desde Supabase 🗄️");
+            completas.forEach(renderCard);
+        }
+
+        // Las incompletas se enriquecen con OMDB y se actualizan
+        if (sinEnriquecer.length > 0) {
+            // console.log(`Enriqueciendo ${sinEnriquecer.length} películas con OMDB... 🌐`);
+            const params = await getBayesianParams();
+
+            for (const pelicula of sinEnriquecer) {
+                const imdbId = pelicula.imdb_id || null;
+                const omdb = await fetchOMDB(imdbId);
+
+                // console.log("imdb_id:", imdbId, "→ OMDB:", omdb);
+
+                const score = bayesianScore([
+                    { R: pelicula.vote_average, n: pelicula.vote_count, ...params.tmdb },
+                    { R: omdb?.rating, n: omdb?.votes, ...params.omdb }
+                ]);
+
+                const { id, ...peliculaSinId } = pelicula;   // ← excluimos id
+                await db.from("movies").upsert({
+                    ...peliculaSinId,
+                    omdb_rating: omdb?.rating ?? null,
+                    omdb_votes: omdb?.votes ?? null,
+                    bayesian_score: score
+                }, { onConflict: "tmdb_id" });
+
+                renderCard({ ...pelicula, bayesian_score: score });
+            }
+        }
+
     } else {
-        console.log("Cargando desde TMDB 🌐");
+        // console.log("Cargando desde TMDB 🌐");
         await buscarPeliculas();
     }
 });
