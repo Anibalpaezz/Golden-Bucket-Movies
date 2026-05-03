@@ -20,28 +20,25 @@ boton.addEventListener("click", async function () {
     const { data, error } = await db
         .from("movies")
         .select("*")
-        .eq("title", buscar.value);
-
-    let link = `https://api.themoviedb.org/3/search/movie?query=${buscar.value}&api_key=54843f74f7e9c45d09f8b170cb4d9a11`;
+        .ilike("title", `%${buscar.value}%`)
+        .order("popularity", { ascending: false });
 
     async function buscarPeliculas() {
+        const link = `https://api.themoviedb.org/3/search/movie?query=${buscar.value}&api_key=54843f74f7e9c45d09f8b170cb4d9a11`;
         const respuesta = await fetch(link);
         const datos = await respuesta.json();
-
-        console.log(datos);
 
         for (let i = 0; i < datos.results.length; i++) {
             const pelicula = datos.results[i];
             const titulo = pelicula.title;
-            const adults = pelicula.adult ? "/Images/adults.png" : "";
             const poster = pelicula.poster_path
                 ? `https://image.tmdb.org/t/p/w500${pelicula.poster_path}`
                 : "/Images/poster_null.jpg";
             const fecha = pelicula.release_date;
-            console.log(titulo, poster, fecha);
 
             await db.from("movies").upsert({
                 tmdb_id: pelicula.id,
+                popularity: pelicula.popularity,
                 original_title: pelicula.original_title,
                 title: titulo,
                 overview: pelicula.overview,
@@ -52,17 +49,9 @@ boton.addEventListener("click", async function () {
                 vote_count: pelicula.vote_count,
             }, { onConflict: "tmdb_id" });
 
-            const adultBadge = pelicula.adult
-                ? `<span class="badge-adult">18+</span>`
-                : "";
-
-            const voteAvg = pelicula.vote_average
-                ? pelicula.vote_average.toFixed(1)
-                : "N/A";
-
-            const voteCount = pelicula.vote_count
-                ? `(${pelicula.vote_count.toLocaleString()})`
-                : "";
+            const adultBadge = pelicula.adult ? `<span class="badge-adult">18+</span>` : "";
+            const voteAvg = pelicula.vote_average ? pelicula.vote_average.toFixed(1) : "N/A";
+            const voteCount = pelicula.vote_count ? `(${pelicula.vote_count.toLocaleString()})` : "";
 
             resultados.innerHTML += `<div class="card">
                                         <div class="poster-wrap">
@@ -82,5 +71,31 @@ boton.addEventListener("click", async function () {
         }
     }
 
-    buscarPeliculas();
+    if (data && data.length > 0) {
+        console.log("Cargando desde Supabase 🗄️");
+        data.forEach(pelicula => {
+            const adultBadge = pelicula.adult ? `<span class="badge-adult">18+</span>` : "";
+            const voteAvg = pelicula.vote_average ? pelicula.vote_average.toFixed(1) : "N/A";
+            const voteCount = pelicula.vote_count ? `(${pelicula.vote_count.toLocaleString()})` : "";
+
+            resultados.innerHTML += `<div class="card">
+                                        <div class="poster-wrap">
+                                            <img class="poster" src="${pelicula.poster}" alt="${pelicula.title}">
+                                            ${adultBadge}
+                                        </div>
+                                        <div class="card-body">
+                                            <h3>${pelicula.title}</h3>
+                                            <p class="date">${pelicula.release_date || "Unknown date"}</p>
+                                            <div class="rating">
+                                                <span class="star">★</span>
+                                                <span class="score">${voteAvg}</span>
+                                                <span class="votes">${voteCount}</span>
+                                            </div>
+                                        </div>
+                                    </div>`;
+        });
+    } else {
+        console.log("Cargando desde TMDB 🌐");
+        buscarPeliculas();
+    }
 });
