@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&display=swap');
+
+/* Reutiliza las variables de index.css */
+:root {
+    --bg: #111318;
+    --surface: #1c1f26;
+    --surface2: #22262f;
+    --border: #2e3340;
+    --gold: #f5c518;
+    --gold-dim: rgba(245,197,24,0.12);
+    --red: #e05252;
+    --text: #eaeaea;
+    --muted: #6b7280;
+    --radius: 10px;
+    --transition: 0.2s ease;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    min-height: 100vh;
+    font-family: 'Barlow', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    padding: 48px 32px;
+}
+
+/* ── Hero layout ── */
+.detail-hero {
+    display: flex;
+    gap: 48px;
+    max-width: 960px;
+    margin: 0 auto;
+    align-items: flex-start;
+}
+
+/* ── Poster ── */
+.detail-poster-wrap {
+    position: relative;
+    flex-shrink: 0;
+    width: 260px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+}
+
+.detail-poster {
+    width: 100%;
+    display: block;
+}
+
+.badge-adult {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--red);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 4px;
+}
+
+/* ── Info panel ── */
+.detail-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.detail-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    line-height: 1.05;
+}
+
+.detail-year {
+    color: var(--muted);
+    font-size: 2rem;
+}
+
+.detail-original {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: -16px;
+}
+
+/* ── Scores ── */
+.detail-scores {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.score-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 110px;
+}
+
+.score-block.score-main {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+}
+
+.score-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.score-main .score-label { color: var(--gold); }
+
+.score-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    line-height: 1;
+}
+
+.score-main .score-value { color: var(--gold); }
+
+.score-votes {
+    font-size: 0.72rem;
+    color: var(--muted);
+}
+
+/* ── Meta table ── */
+.detail-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.meta-row {
+    display: flex;
+    gap: 16px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+}
+
+.meta-key {
+    width: 100px;
+    flex-shrink: 0;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    padding-top: 2px;
+}
+
+.meta-val { color: var(--text); }
+
+.detail-link {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity var(--transition);
+}
+.detail-link:hover { opacity: 0.7; }
+
+/* ── Sinopsis ── */
+.detail-overview {
+    max-width: 960px;
+    margin: 48px auto 0;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+}
+
+.section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    margin-bottom: 16px;
+}
+
+.detail-overview p {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--text);
+    max-width: 720px;
+}
+
+/* ── Mensajes ── */
+.msg-loading, .msg-error {
+    text-align: center;
+    margin-top: 80px;
+    font-size: 1.1rem;
+    color: var(--muted);
+}
+
+/* ── Responsive ── */
+@media (max-width: 680px) {
+    .detail-hero {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .detail-poster-wrap { width: 200px; }
+
+    .detail-title { font-size: 2.2rem; text-align: center; }
+    .detail-original { text-align: center; }
+    .detail-scores { justify-content: center; }
+}

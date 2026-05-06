@@ -1,0 +1,294 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ── Tokens ───────────────────────────────────────────────────────────────── */
+:root {
+    --bg:           #0a0b0f;
+    --bg2:          #0f1117;
+    --surface:      rgba(255,255,255,0.04);
+    --surface2:     rgba(255,255,255,0.07);
+    --glass:        rgba(20,22,30,0.72);
+    --border:       rgba(255,255,255,0.08);
+    --border-hover: rgba(245,197,24,0.55);
+    --gold:         #f5c518;
+    --gold-dim:     rgba(245,197,24,0.12);
+    --gold-glow:    rgba(245,197,24,0.22);
+    --red:          #e05252;
+    --text:         #f0f0f0;
+    --muted:        #5c6370;
+    --radius:       14px;
+    --transition:   0.22s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── Body & grain background ───────────────────────────────────────────────── */
+body {
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    padding: 56px 32px 80px;
+    text-align: center;
+
+    /* Ambient gradient mesh */
+    background-image:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(245,197,24,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%,  rgba(100,80,200,0.06) 0%, transparent 60%);
+    background-attachment: fixed;
+}
+
+/* Film grain overlay via SVG noise */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+}
+
+/* Everything needs to sit above the grain */
+body > * { position: relative; z-index: 1; }
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    margin-bottom: 6px;
+
+    /* Gold text glow */
+    text-shadow:
+        0 0 40px rgba(245,197,24,0.35),
+        0 0 80px rgba(245,197,24,0.15);
+
+    animation: fadeDown 0.6s ease both;
+}
+
+/* Thin tagline under h1 — optional, doesn't break if absent */
+.tagline {
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 36px;
+    animation: fadeDown 0.7s 0.1s ease both;
+}
+
+/* ── Search bar ────────────────────────────────────────────────────────────── */
+.search-wrapper {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 0;
+    border-radius: 50px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: border-color var(--transition), box-shadow var(--transition);
+    overflow: hidden;
+    animation: fadeDown 0.7s 0.15s ease both;
+}
+
+.search-wrapper:focus-within {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 4px var(--gold-dim), 0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* If no .search-wrapper in HTML, fall back gracefully */
+#movieSearch {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    padding: 14px 22px;
+    width: min(440px, calc(100vw - 140px));
+    outline: none;
+}
+
+#movieSearch::placeholder { color: var(--muted); }
+
+#searchButton {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    color: #000;
+    background: var(--gold);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 26px;
+    margin: 4px;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    flex-shrink: 0;
+}
+
+#searchButton:hover {
+    background: #ffd740;
+    box-shadow: 0 0 20px var(--gold-glow);
+}
+#searchButton:active { transform: scale(0.95); }
+
+/* ── Results grid ──────────────────────────────────────────────────────────── */
+#movieResults {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 22px;
+    margin-top: 52px;
+    text-align: left;
+}
+
+/* ── Card ──────────────────────────────────────────────────────────────────── */
+#movieResults .card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    /* Staggered fade-in — JS can set style="--i:N" on each card for delay */
+    animation: fadeUp 0.45s calc(var(--i, 0) * 60ms) ease both;
+
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition),
+        border-color var(--transition);
+}
+
+#movieResults .card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow:
+        0 20px 48px rgba(0,0,0,0.65),
+        0 0 0 1px var(--border-hover),
+        0 0 40px rgba(245,197,24,0.08);
+    border-color: transparent;
+}
+
+/* ── Poster ────────────────────────────────────────────────────────────────── */
+#movieResults .card .poster-wrap {
+    position: relative;
+    aspect-ratio: 2/3;
+    background: var(--border);
+    overflow: hidden;
+}
+
+#movieResults .card .poster-wrap img.poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+#movieResults .card:hover .poster-wrap img.poster {
+    transform: scale(1.04);
+}
+
+/* Gradient fade at poster bottom → seamless into card body */
+#movieResults .card .poster-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 40% 0 0 0;
+    background: linear-gradient(to bottom, transparent, rgba(12,14,20,0.75));
+    pointer-events: none;
+}
+
+/* ── Adult badge ───────────────────────────────────────────────────────────── */
+#movieResults .card .badge-adult {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    background: var(--red);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 6px;
+    z-index: 2;
+}
+
+/* ── Card body ─────────────────────────────────────────────────────────────── */
+#movieResults .card .card-body {
+    padding: 10px 13px 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+#movieResults .card h3 {
+    font-size: 0.87rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+}
+
+#movieResults .card .date {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+}
+
+/* ── Rating row ────────────────────────────────────────────────────────────── */
+#movieResults .card .rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+
+#movieResults .card .rating .star {
+    color: var(--gold);
+    font-size: 0.82rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 4px var(--gold-glow));
+}
+
+#movieResults .card .rating .score {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+}
+
+#movieResults .card .rating .votes {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-left: 1px;
+}
+
+/* ── Animations ────────────────────────────────────────────────────────────── */
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+    body { padding: 40px 18px 60px; }
+    h1 { font-size: 2.8rem; }
+    #movieSearch { width: calc(100vw - 130px); }
+    #movieResults { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+}

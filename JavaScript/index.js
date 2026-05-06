@@ -95,22 +95,24 @@ function renderCard(pelicula) {
     const voteAvg = displayScore ? displayScore.toFixed(1) : "N/A";
     const voteCount = pelicula.vote_count ? `(${pelicula.vote_count.toLocaleString()})` : "";
 
-    resultados.innerHTML += `
-        <div class="card">
-            <div class="poster-wrap">
-                <img class="poster" src="${pelicula.poster}" alt="${pelicula.title}">
-                ${adultBadge}
-            </div>
-            <div class="card-body">
-                <h3>${pelicula.title}</h3>
-                <p class="date">${pelicula.release_date || "Unknown date"}</p>
-                <div class="rating">
-                    <span class="star">★</span>
-                    <span class="score">${voteAvg}</span>
-                    <span class="votes">${voteCount}</span>
+    resultados.insertAdjacentHTML('beforeend', `
+        <a href="movies.html?tmdb_id=${pelicula.tmdb_id}"><button>
+            <div class="card">
+                <div class="poster-wrap">
+                    <img class="poster" src="${pelicula.poster}" alt="${pelicula.title}">
+                    ${adultBadge}
+                </div>
+                <div class="card-body">
+                    <h3>${pelicula.title}</h3>
+                    <p class="date">${pelicula.release_date || "Unknown date"}</p>
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="score">${voteAvg}</span>
+                        <span class="votes">${voteCount}</span>
+                    </div>
                 </div>
             </div>
-        </div>`;
+        </button></a>`);
 }
 
 // ── Búsqueda en TMDB + enriquecimiento con OMDB ───────────────────────────────
