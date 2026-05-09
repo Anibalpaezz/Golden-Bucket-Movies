@@ -96,7 +96,7 @@ function renderCard(pelicula) {
     const voteCount = pelicula.vote_count ? `(${pelicula.vote_count.toLocaleString()})` : "";
 
     resultados.insertAdjacentHTML('beforeend', `
-        <a href="movies.html?tmdb_id=${pelicula.tmdb_id}"><button>
+        <a href="movies.html?tmdb_id=${pelicula.tmdb_id}">
             <div class="card">
                 <div class="poster-wrap">
                     <img class="poster" src="${pelicula.poster}" alt="${pelicula.title}">
@@ -112,12 +112,12 @@ function renderCard(pelicula) {
                     </div>
                 </div>
             </div>
-        </button></a>`);
+        </a>`);
 }
 
 // ── Búsqueda en TMDB + enriquecimiento con OMDB ───────────────────────────────
 async function buscarPeliculas() {
-    const link = `https://api.themoviedb.org/3/search/movie?query=${buscar.value}&api_key=${TMDB_API_KEY}`;
+    const link = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(buscar.value)}&api_key=${TMDB_API_KEY}`;
     const respuesta = await fetch(link);
     const datos = await respuesta.json();
 

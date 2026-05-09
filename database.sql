@@ -19,3 +19,6 @@ ALTER TABLE movies
   ADD COLUMN IF NOT EXISTS omdb_rating    NUMERIC(4,2),
   ADD COLUMN IF NOT EXISTS omdb_votes     INTEGER,
   ADD COLUMN IF NOT EXISTS bayesian_score NUMERIC(4,2);
+
+CREATE INDEX IF NOT EXISTS idx_movies_title      ON movies (title);
+CREATE INDEX IF NOT EXISTS idx_movies_popularity ON movies (popularity);

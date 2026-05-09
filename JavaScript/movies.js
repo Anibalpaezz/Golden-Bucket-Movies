@@ -4,7 +4,7 @@ const db = createClient(
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrZmVxcXZrdXF3ZHBzb25qaHdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MDI3NzgsImV4cCI6MjA3NTA3ODc3OH0.XO837ibtD38N8xeeiF118JQglG6c5hF4kKbVGjC1R5s"
 );
 
-window.searchParams = new URLSearchParams(window.location.search);
+const searchParams = new URLSearchParams(window.location.search);
 const tmdbId = searchParams.get("tmdb_id");
 
 function renderPelicula(p) {
@@ -12,7 +12,7 @@ function renderPelicula(p) {
     const scoreStr = score ? score.toFixed(1) : "N/A";
     const year = p.release_date ? p.release_date.slice(0, 4) : "—";
     const imdbLink = p.imdb_id
-        ? `<a class="detail-link" href="https://www.imdb.com/title/${p.imdb_id}" target="_blank">IMDb ↗</a>`
+        ? `<a class="detail-link" href="https://www.imdb.com/title/${p.imdb_id}" target="_blank" rel="noopener noreferrer">IMDb ↗</a>`
         : "";
     const adultBadge = p.adult ? `<span class="badge-adult">18+</span>` : "";
     const popularity = p.popularity ? Math.round(p.popularity).toLocaleString() : "—";
@@ -85,20 +85,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     container.innerHTML = renderPelicula(pelicula);
-
-    async function fetchFASynopsis(title, year) {
-        const res = await fetch(
-            "https://vkfeqqvkuqwdpsonjhwa.supabase.co/functions/v1/fa-synopsis",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrZmVxcXZrdXF3ZHBzb25qaHdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MDI3NzgsImV4cCI6MjA3NTA3ODc3OH0.XO837ibtD38N8xeeiF118JQglG6c5hF4kKbVGjC1R5s`
-                },
-                body: JSON.stringify({ title, year })
-            }
-        );
-        const data = await res.json();
-        return data.synopsis ?? null;
-    }
 });
