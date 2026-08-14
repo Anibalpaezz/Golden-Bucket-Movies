@@ -1,0 +1,15 @@
+---
+import Base from "../layouts/Base.astro";
+import "../styles/movies.css";
+---
+
+<Base title="Golden Bucket Movies · Detalle">
+  <div class="container">
+    <h1>Golden Bucket Movies</h1>
+    <div id="resultados" aria-live="polite"></div>
+  </div>
+</Base>
+
+<script>
+  import "../scripts/movies.ts";
+</script>

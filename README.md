@@ -1,6 +1,6 @@
 # 🎬 MovieSearch
 
-A movie search web app built with vanilla JavaScript, powered by the **TMDB API** and backed by a personal **Supabase** database used as a cache and future multi-source aggregator.
+A movie search web app built with **Astro**, powered by the **TMDB API** and backed by a personal **Supabase** database used as a cache and future multi-source aggregator.
 
 ---
 
@@ -19,8 +19,8 @@ A movie search web app built with vanilla JavaScript, powered by the **TMDB API*
 
 | Layer       | Technology          |
 |-------------|---------------------|
-| Frontend    | HTML, CSS, JavaScript (Vanilla) |
-| Movie data  | [TMDB API](https://www.themoviedb.org/documentation/api) |
+| Framework   | [Astro](https://astro.build) (static output) |
+| Movie data  | [TMDB API](https://www.themoviedb.org/documentation/api) + OMDB |
 | Database    | [Supabase](https://supabase.com) (PostgreSQL) |
 
 ---
@@ -28,37 +28,69 @@ A movie search web app built with vanilla JavaScript, powered by the **TMDB API*
 ## 📁 Project Structure
 
 ```
-├── index.html        # Main UI — search input, button, results container
-├── script.js         # App logic — fetch, cache, render
-├── styles.css        # Styles
-└── Images/
-    └── poster_null.jpg   # Fallback poster for movies without image
+├── astro.config.mjs      # Configuración de Astro
+├── package.json
+├── .env                  # Variables de entorno (NO se sube a git)
+├── public/
+│   └── Images/           # Assets estáticos (poster fallback, favicon)
+└── src/
+    ├── layouts/
+    │   └── Base.astro    # Layout base (head, meta, favicon)
+    ├── lib/
+    │   ├── supabase.ts   # Cliente Supabase + claves de API
+    │   └── types.ts      # Tipos de película
+    ├── pages/
+    │   ├── index.astro   # Buscador
+    │   └── movies.astro  # Detalle de película (movies.html)
+    ├── scripts/
+    │   ├── index.ts      # Lógica del buscador
+    │   └── movies.ts     # Lógica del detalle
+    └── styles/
+        ├── index.css
+        └── movies.css
 ```
 
 ---
 
 ## ⚙️ Setup
 
-### 1. Clone the repository
+### 1. Install dependencies
 
 ```bash
-git clone https://github.com/your-username/moviesearch.git
-cd moviesearch
+npm install
 ```
 
 ### 2. Configure your API keys
 
-In `script.js`, replace the placeholders with your own credentials:
+Copia `.env.example` a `.env` y rellena tus credenciales:
 
-```javascript
-const TMDB_API_KEY = "YOUR_TMDB_API_KEY";
-const supabaseUrl = "YOUR_SUPABASE_URL";
-const supabaseKey = "YOUR_SUPABASE_ANON_KEY";
+```bash
+cp .env.example .env
 ```
 
-> ⚠️ Never commit real API keys to a public repository. Consider using environment variables or a `.env` file.
+```bash
+PUBLIC_SUPABASE_URL=...
+PUBLIC_SUPABASE_ANON_KEY=...
+PUBLIC_TMDB_API_KEY=...
+PUBLIC_OMDB_API_KEY=...
+```
 
-### 3. Set up the Supabase table
+> ⚠️ Nunca subas el archivo `.env` a git (ya está en `.gitignore`). Las variables con prefijo `PUBLIC_` quedan expuestas en el cliente, igual que antes.
+
+### 3. Ejecutar en desarrollo
+
+```bash
+npm run dev
+```
+
+Para generar el build estático y previsualizarlo:
+
+```bash
+npm run build
+npm run preview
+```
+
+### 4. Set up the Supabase table
 
 Run this SQL in your Supabase SQL editor:
 
@@ -73,9 +105,9 @@ CREATE TABLE movies (
 );
 ```
 
-### 4. Open in browser
+### 5. Open in browser
 
-Simply open `index.html` in your browser or use a local server like [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer).
+Ya no hace falta servir `index.html` con Live Server: abre `http://localhost:4321` en tu navegador tras ejecutar `npm run dev` o `npm run preview`.
 
 ---
 

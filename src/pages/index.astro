@@ -1,0 +1,26 @@
+---
+import Base from "../layouts/Base.astro";
+import "../styles/index.css";
+---
+
+<Base title="Golden Bucket Movies" description="Busca películas y descubre su Golden Score basado en TMDB, IMDb y OMDB.">
+  <h1>Golden Bucket Movies</h1>
+  <p class="tagline">El buscador de cine definitivo</p>
+
+  <div class="search-wrapper">
+    <input
+      type="text"
+      name="movieSearch"
+      id="movieSearch"
+      placeholder="Busca una película..."
+      aria-label="Buscar una película"
+    />
+    <button id="searchButton" type="button">Buscar</button>
+  </div>
+
+  <div id="movieResults" aria-live="polite"></div>
+</Base>
+
+<script>
+  import "../scripts/index.ts";
+</script>
