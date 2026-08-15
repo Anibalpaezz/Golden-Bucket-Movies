@@ -219,3 +219,31 @@ body {
     .detail-original { text-align: center; }
     .detail-scores { justify-content: center; }
 }
+
+/* ── Footer ── */
+.site-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    padding: 14px 20px;
+    text-align: center;
+    background: rgba(17, 19, 24, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+}
+
+.site-footer a {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
+.site-footer a:hover {
+    color: var(--gold);
+}
